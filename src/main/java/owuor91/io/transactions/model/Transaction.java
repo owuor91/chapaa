@@ -1,23 +1,19 @@
 package owuor91.io.transactions.model;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.AccessLevel;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "transactions")
@@ -34,9 +30,10 @@ public class Transaction {
   @Column(name = "sender", nullable = false)
   private String sender;
 
-  @Column(name = "receiver", nullable = false)
+  @Column(name = "receiver")
   private String receiver;
 
+  @Min(value = 1, message = "Amount must be more than 0")
   @Column(name = "amount", nullable = false)
   private Double amount;
 
@@ -45,4 +42,8 @@ public class Transaction {
 
   @Column(name = "transaction_code", nullable = false)
   private String transactionCode;
+
+  @NotEmpty(message = "transaction type must not be blank")
+  @Column(name = "transaction_type", nullable = false)
+  private String transactionType;
 }

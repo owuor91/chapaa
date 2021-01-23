@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,12 +28,15 @@ public class User {
   @Column(name = "user_id")
   private UUID userId;
 
+  @NotEmpty(message = "Name must not be blank")
   @Column(name = "name", nullable = false)
   private String name;
 
+  @NotEmpty(message = "Phone number must not be blank")
   @Column(name = "phone_number", nullable = false)
   private String phoneNumber;
 
+  @NotEmpty(message = "pin must not be blank")
   @Column(name = "pin", nullable = false)
   private String pin;
 

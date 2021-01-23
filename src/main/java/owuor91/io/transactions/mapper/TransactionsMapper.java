@@ -3,6 +3,7 @@ package owuor91.io.transactions.mapper;
 import org.springframework.stereotype.Component;
 import owuor91.io.transactions.dto.TransactionDto;
 import owuor91.io.transactions.model.Transaction;
+import owuor91.io.transactions.model.TransactionType;
 
 @Component
 public class TransactionsMapper {
@@ -14,6 +15,7 @@ public class TransactionsMapper {
         .receiver(transactionDto.getReceiver())
         .timestamp(transactionDto.getTimestamp())
         .transactionCode(transactionDto.getTransactionCode())
+        .transactionType(TransactionType.getNameByValue(transactionDto.getTransactionType()))
         .build();
   }
 
@@ -25,6 +27,7 @@ public class TransactionsMapper {
         .receiver(transaction.getReceiver())
         .timestamp(transaction.getTimestamp())
         .transactionCode(transaction.getTransactionCode())
+        .transactionType(TransactionType.valueOf(transaction.getTransactionType()).getValue())
         .build();
   }
 }

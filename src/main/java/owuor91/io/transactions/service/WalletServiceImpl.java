@@ -32,6 +32,6 @@ public class WalletServiceImpl implements WalletService {
       userRepository.save(user);
       return walletMapper.toWalletDto(wallet);
     }
-    throw new UserNotFoundException("User doesn't exist");
+    throw new UserNotFoundException(String.format("User with id %s doesn't exist", walletDto.getUserId()));
   }
 }
