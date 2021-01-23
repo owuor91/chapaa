@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,11 @@ import owuor91.io.transactions.dto.TransactionDto;
 import owuor91.io.transactions.dto.WalletDto;
 import owuor91.io.transactions.exceptions.InsufficientBalanceException;
 import owuor91.io.transactions.exceptions.UserNotFoundException;
+import owuor91.io.transactions.service.SmsSenderImpl;
 import owuor91.io.transactions.service.TransactionService;
 import owuor91.io.transactions.service.UserService;
 import owuor91.io.transactions.service.WalletService;
+import owuor91.io.transactions.util.Util;
 
 @RestController
 public class WalletController extends ApiController {
@@ -30,6 +33,8 @@ public class WalletController extends ApiController {
   @Autowired TransactionService transactionService;
 
   @Autowired UserService userService;
+
+  @Autowired SmsSenderImpl smsSender;
 
   @PostMapping(value = "/wallet", produces = "application/json")
   public ResponseEntity<WalletDto> createWallet(@RequestBody String payload)
@@ -55,9 +60,12 @@ public class WalletController extends ApiController {
         .receiver(phoneNumber)
         .amount(amount)
         .build();
-
-    return new ResponseEntity<TransactionDto>(transactionService.postTransaction(transactionDto),
-        HttpStatus.OK);
+    TransactionDto response = transactionService.postTransaction(transactionDto);
+    CompletableFuture.runAsync(() -> {
+      smsSender.sendSms(smsSender.composeDepositMessage(response),
+          Util.formatPhoneNumber(phoneNumber));
+    });
+    return new ResponseEntity<TransactionDto>(response, HttpStatus.OK);
   }
 
   @PostMapping(value = "/wallet/withdraw", produces = "application/json")
@@ -76,8 +84,12 @@ public class WalletController extends ApiController {
         .amount(amount)
         .build();
 
-    return new ResponseEntity<TransactionDto>(transactionService.postTransaction(transactionDto),
-        HttpStatus.OK);
+    TransactionDto response = transactionService.postTransaction(transactionDto);
+    CompletableFuture.runAsync(() -> {
+      smsSender.sendSms(smsSender.composeWithdrawMessage(response),
+          Util.formatPhoneNumber(phoneNumber));
+    });
+    return new ResponseEntity<TransactionDto>(response, HttpStatus.OK);
   }
 
   private String getDefaultSystemWalletNumber() throws UserNotFoundException {
@@ -95,6 +107,10 @@ public class WalletController extends ApiController {
             .timestamp(
                 Timestamp.from(Instant.now()))
             .build();
+    CompletableFuture.runAsync(() -> {
+      smsSender.sendSms(smsSender.composeBalanceMessage(balanceDto),
+          Util.formatPhoneNumber(phoneNumber));
+    });
     return new ResponseEntity<BalanceDto>(balanceDto, HttpStatus.OK);
   }
 }
