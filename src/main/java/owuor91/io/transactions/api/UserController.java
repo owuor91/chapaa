@@ -20,6 +20,6 @@ public class UserController extends ApiController{
     System.out.println(payload);
     UserDto userDto = new Gson().fromJson(payload, UserDto.class);
     UserDto response = userService.createUser(userDto);
-    return new ResponseEntity<>(response, HttpStatus.OK);
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
   }
 }

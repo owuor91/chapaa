@@ -1,12 +1,10 @@
 package owuor91.io.transactions.repository;
 
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import owuor91.io.transactions.model.User;
+import owuor91.io.transactions.model.Wallet;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
-  Optional<User> findByPhoneNumber(String phoneNumber);
+public interface WalletRepository extends JpaRepository<Wallet, UUID> {
 }

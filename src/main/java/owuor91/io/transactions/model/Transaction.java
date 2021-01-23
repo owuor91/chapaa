@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,18 +31,18 @@ public class Transaction {
   @Column(name = "transaction_id")
   private UUID transactionId;
 
-  @Column(name = "sender")
+  @Column(name = "sender", nullable = false)
   private String sender;
 
-  @Column(name = "receiver")
+  @Column(name = "receiver", nullable = false)
   private String receiver;
 
-  @Column(name = "amount")
+  @Column(name = "amount", nullable = false)
   private Double amount;
 
-  @Column(name = "timestamp")
+  @Column(name = "timestamp", nullable = false)
   private Timestamp timestamp;
 
-  @Column(name = "transaction_code")
+  @Column(name = "transaction_code", nullable = false)
   private String transactionCode;
 }

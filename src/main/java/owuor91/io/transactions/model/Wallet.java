@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -16,27 +16,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
+@Table(name = "wallets")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class User {
+public class Wallet {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "user_id")
-  private UUID userId;
-
-  @Column(name = "name", nullable = false)
-  private String name;
-
-  @Column(name = "phone_number", nullable = false)
-  private String phoneNumber;
-
-  @Column(name = "pin", nullable = false)
-  private String pin;
+  @Column(name = "wallet_id")
+  private UUID walletId;
 
   @OneToOne
-  @JoinColumn(name = "wallet_id")
-  private Wallet wallet;
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
+
+  @Column(name = "balance", nullable = false)
+  private Double balance;
 }
