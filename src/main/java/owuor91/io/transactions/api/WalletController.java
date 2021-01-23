@@ -4,12 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import owuor91.io.transactions.dto.BalanceDto;
 import owuor91.io.transactions.dto.TransactionDto;
 import owuor91.io.transactions.dto.WalletDto;
 import owuor91.io.transactions.exceptions.InsufficientBalanceException;
@@ -35,7 +40,7 @@ public class WalletController extends ApiController {
     return new ResponseEntity<>(response, HttpStatus.CREATED);
   }
 
-  @PostMapping(value = "/wallet/fund", produces = "application/json")
+  @PostMapping(value = "/wallet/deposit", produces = "application/json")
   public ResponseEntity<TransactionDto> fundWallet(@RequestBody String payload)
       throws IOException, UserNotFoundException,
       InsufficientBalanceException {
@@ -55,7 +60,41 @@ public class WalletController extends ApiController {
         HttpStatus.OK);
   }
 
+  @PostMapping(value = "/wallet/withdraw", produces = "application/json")
+  public ResponseEntity<TransactionDto> withdrawFunds(@RequestBody String payload)
+      throws IOException, UserNotFoundException,
+      InsufficientBalanceException {
+    System.out.println(payload);
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode root = mapper.readTree(payload);
+    String phoneNumber = root.get("phoneNumber").textValue();
+    Double amount = root.get("amount").doubleValue();
+    TransactionDto transactionDto = TransactionDto.builder()
+        .transactionType(3)
+        .sender(phoneNumber)
+        .receiver(getDefaultSystemWalletNumber())
+        .amount(amount)
+        .build();
+
+    return new ResponseEntity<TransactionDto>(transactionService.postTransaction(transactionDto),
+        HttpStatus.OK);
+  }
+
   private String getDefaultSystemWalletNumber() throws UserNotFoundException {
     return userService.findDefaultSystemUser().getPhoneNumber();
+  }
+
+  @GetMapping(value = "/wallet/balance", produces = "application/json")
+  public ResponseEntity<BalanceDto> checkBalance(@RequestParam String phoneNumber)
+      throws UserNotFoundException {
+    WalletDto userWallet = walletService.getWalletByPhoneNumber(phoneNumber);
+    BalanceDto balanceDto =
+        BalanceDto.builder()
+            .phoneNumber(userWallet.getUser().getPhoneNumber())
+            .balance(userWallet.getBalance())
+            .timestamp(
+                Timestamp.from(Instant.now()))
+            .build();
+    return new ResponseEntity<BalanceDto>(balanceDto, HttpStatus.OK);
   }
 }

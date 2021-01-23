@@ -11,6 +11,7 @@ import owuor91.io.transactions.exceptions.InsufficientBalanceException;
 import owuor91.io.transactions.exceptions.UserNotFoundException;
 import owuor91.io.transactions.mapper.TransactionsMapper;
 import owuor91.io.transactions.model.Transaction;
+import owuor91.io.transactions.model.TransactionType;
 import owuor91.io.transactions.model.User;
 import owuor91.io.transactions.model.Wallet;
 import owuor91.io.transactions.repository.TransactionRepository;
@@ -43,7 +44,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
     if (transactionDto.getAmount() > senderWallet.getBalance()) {
       throw new InsufficientBalanceException(String.format(
-          "You do not have enough funds to send KES %2.1f, Your available balance is KES %2.1f",
+          "You do not have enough funds to %s KES %2.1f, Your available balance is KES %2.1f",
+          TransactionType.getNameByValue(transactionDto.getTransactionType()).toLowerCase(),
           transactionDto.getAmount(), senderWallet.getBalance()));
     }
     senderWallet.setBalance(senderWallet.getBalance() - transactionDto.getAmount());

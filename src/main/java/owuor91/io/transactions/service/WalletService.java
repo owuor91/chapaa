@@ -5,4 +5,6 @@ import owuor91.io.transactions.exceptions.UserNotFoundException;
 
 public interface WalletService {
   WalletDto createWallet(WalletDto walletDto) throws UserNotFoundException;
+
+  WalletDto getWalletByPhoneNumber(String phoneNumber) throws UserNotFoundException;
 }
