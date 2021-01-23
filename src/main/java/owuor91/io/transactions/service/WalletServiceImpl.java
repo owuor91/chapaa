@@ -8,6 +8,7 @@ import owuor91.io.transactions.exceptions.UserNotFoundException;
 import owuor91.io.transactions.mapper.WalletMapper;
 import owuor91.io.transactions.model.User;
 import owuor91.io.transactions.model.Wallet;
+import owuor91.io.transactions.repository.TransactionRepository;
 import owuor91.io.transactions.repository.UserRepository;
 import owuor91.io.transactions.repository.WalletRepository;
 
@@ -16,6 +17,7 @@ public class WalletServiceImpl implements WalletService {
   @Autowired WalletMapper walletMapper;
   @Autowired WalletRepository walletRepository;
   @Autowired UserRepository userRepository;
+  @Autowired TransactionRepository transactionRepository;
 
   @Override public WalletDto createWallet(WalletDto walletDto) throws UserNotFoundException {
     Optional<User> userOptional = userRepository.findById(walletDto.getUserId());

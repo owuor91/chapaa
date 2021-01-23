@@ -9,4 +9,6 @@ import owuor91.io.transactions.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
   Optional<User> findByPhoneNumber(String phoneNumber);
+
+  Optional<User> findByName(String name);
 }

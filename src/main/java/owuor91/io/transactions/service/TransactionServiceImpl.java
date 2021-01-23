@@ -1,6 +1,5 @@
 package owuor91.io.transactions.service;
 
-import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Optional;
@@ -17,6 +16,8 @@ import owuor91.io.transactions.model.Wallet;
 import owuor91.io.transactions.repository.TransactionRepository;
 import owuor91.io.transactions.repository.UserRepository;
 import owuor91.io.transactions.repository.WalletRepository;
+
+import static owuor91.io.transactions.util.Util.generateRandomCode;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -52,16 +53,6 @@ public class TransactionServiceImpl implements TransactionService {
     Transaction response =
         transactionRepository.save(transactionsMapper.toTransaction(transactionDto));
     return transactionsMapper.toTransactionDto(response);
-  }
-
-  private String generateRandomCode() {
-    String source = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    SecureRandom secureRandom = new SecureRandom();
-    StringBuilder stringBuilder = new StringBuilder(6);
-    for (int i = 0; i < 8; i++) {
-      stringBuilder.append(source.charAt(secureRandom.nextInt(source.length())));
-    }
-    return stringBuilder.toString();
   }
 
   private Wallet findWalletByPhoneNumber(String phoneNumber) {

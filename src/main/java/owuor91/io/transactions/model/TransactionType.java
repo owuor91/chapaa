@@ -1,7 +1,7 @@
 package owuor91.io.transactions.model;
 
 public enum TransactionType {
-  TRANSFER(1), FUNDING(2), REVERSAL(3);
+  TRANSFER(1), DEPOSIT(2), WITHDRAWAL(3), REVERSAL(4);
 
   private int value;
 

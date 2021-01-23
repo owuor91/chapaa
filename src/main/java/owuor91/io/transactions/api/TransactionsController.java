@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import owuor91.io.transactions.dto.TransactionDto;
 import owuor91.io.transactions.exceptions.InsufficientBalanceException;
 import owuor91.io.transactions.exceptions.UserNotFoundException;
-import owuor91.io.transactions.model.TransactionType;
 import owuor91.io.transactions.service.TransactionService;
 
 @RestController
@@ -22,7 +21,6 @@ public class TransactionsController extends ApiController {
       UserNotFoundException, InsufficientBalanceException {
     System.out.println(payload);
     TransactionDto transactionDto = new Gson().fromJson(payload, TransactionDto.class);
-    System.out.println(TransactionType.getNameByValue( transactionDto.getTransactionType()));
     TransactionDto response = transactionService.postTransaction(transactionDto);
     return new ResponseEntity<>(response, HttpStatus.CREATED);
   }
