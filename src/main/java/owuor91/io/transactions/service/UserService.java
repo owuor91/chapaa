@@ -7,4 +7,6 @@ public interface UserService {
   UserDto createUser(UserDto userDto);
 
   UserDto findDefaultSystemUser() throws UserNotFoundException;
+
+  boolean userIsValid(String phoneNumber, String pin);
 }

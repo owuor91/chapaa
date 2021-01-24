@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import owuor91.io.transactions.dto.TransactionDto;
 import owuor91.io.transactions.exceptions.InsufficientBalanceException;
 import owuor91.io.transactions.exceptions.UserNotFoundException;
+import owuor91.io.transactions.exceptions.WrongPinException;
 import owuor91.io.transactions.service.SmsSenderImpl;
 import owuor91.io.transactions.service.TransactionService;
 import owuor91.io.transactions.util.Util;
@@ -25,9 +26,13 @@ public class TransactionsController extends ApiController {
 
   @PostMapping(value = "/transaction", produces = "application/json")
   public ResponseEntity<TransactionDto> postTransaction(@RequestBody String payload) throws
-      UserNotFoundException, InsufficientBalanceException {
+      UserNotFoundException, InsufficientBalanceException, WrongPinException {
     System.out.println(payload);
     TransactionDto transactionDto = new Gson().fromJson(payload, TransactionDto.class);
+    if (transactionDto.getPin() == null) {
+      throw new WrongPinException("Invalid credentials, please try again");
+    }
+    validateUser(transactionDto.getSender(), transactionDto.getPin());
     transactionDto.setTransactionType(1);
     TransactionDto response = transactionService.postTransaction(transactionDto);
     CompletableFuture.runAsync(() -> {
@@ -44,7 +49,8 @@ public class TransactionsController extends ApiController {
 
   @GetMapping(value = "/transaction", produces = "application/json")
   public ResponseEntity<List<TransactionDto>> getTransactionsByPhone(
-      @RequestParam String phoneNumber) {
+      @RequestParam String phoneNumber, @RequestParam String pin) throws WrongPinException {
+    validateUser(phoneNumber, pin);
     return new ResponseEntity<List<TransactionDto>>(
         transactionService.listTransactionsByPhoneNumber(phoneNumber), HttpStatus.OK);
   }

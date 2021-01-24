@@ -20,9 +20,9 @@ import owuor91.io.transactions.dto.TransactionDto;
 import owuor91.io.transactions.dto.WalletDto;
 import owuor91.io.transactions.exceptions.InsufficientBalanceException;
 import owuor91.io.transactions.exceptions.UserNotFoundException;
+import owuor91.io.transactions.exceptions.WrongPinException;
 import owuor91.io.transactions.service.SmsSenderImpl;
 import owuor91.io.transactions.service.TransactionService;
-import owuor91.io.transactions.service.UserService;
 import owuor91.io.transactions.service.WalletService;
 import owuor91.io.transactions.util.Util;
 
@@ -31,8 +31,6 @@ public class WalletController extends ApiController {
   @Autowired WalletService walletService;
 
   @Autowired TransactionService transactionService;
-
-  @Autowired UserService userService;
 
   @Autowired SmsSenderImpl smsSender;
 
@@ -47,13 +45,15 @@ public class WalletController extends ApiController {
 
   @PostMapping(value = "/wallet/deposit", produces = "application/json")
   public ResponseEntity<TransactionDto> fundWallet(@RequestBody String payload)
-      throws IOException, UserNotFoundException,
+      throws IOException, UserNotFoundException, WrongPinException,
       InsufficientBalanceException {
     System.out.println(payload);
     ObjectMapper mapper = new ObjectMapper();
     JsonNode root = mapper.readTree(payload);
     String phoneNumber = root.get("phoneNumber").textValue();
     Double amount = root.get("amount").doubleValue();
+    String pin = root.get("pin").textValue();
+    validateUser(phoneNumber, pin);
     TransactionDto transactionDto = TransactionDto.builder()
         .transactionType(2)
         .sender(getDefaultSystemWalletNumber())
@@ -70,13 +70,15 @@ public class WalletController extends ApiController {
 
   @PostMapping(value = "/wallet/withdraw", produces = "application/json")
   public ResponseEntity<TransactionDto> withdrawFunds(@RequestBody String payload)
-      throws IOException, UserNotFoundException,
+      throws IOException, UserNotFoundException, WrongPinException,
       InsufficientBalanceException {
     System.out.println(payload);
     ObjectMapper mapper = new ObjectMapper();
     JsonNode root = mapper.readTree(payload);
     String phoneNumber = root.get("phoneNumber").textValue();
     Double amount = root.get("amount").doubleValue();
+    String pin = root.get("pin").textValue();
+    validateUser(phoneNumber, pin);
     TransactionDto transactionDto = TransactionDto.builder()
         .transactionType(3)
         .sender(phoneNumber)
@@ -97,8 +99,10 @@ public class WalletController extends ApiController {
   }
 
   @GetMapping(value = "/wallet/balance", produces = "application/json")
-  public ResponseEntity<BalanceDto> checkBalance(@RequestParam String phoneNumber)
-      throws UserNotFoundException {
+  public ResponseEntity<BalanceDto> checkBalance(@RequestParam String phoneNumber,
+      @RequestParam String pin)
+      throws UserNotFoundException, WrongPinException {
+    validateUser(phoneNumber, pin);
     WalletDto userWallet = walletService.getWalletByPhoneNumber(phoneNumber);
     BalanceDto balanceDto =
         BalanceDto.builder()

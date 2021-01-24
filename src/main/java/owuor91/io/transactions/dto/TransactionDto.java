@@ -1,5 +1,6 @@
 package owuor91.io.transactions.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.sql.Timestamp;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -23,4 +24,7 @@ public class TransactionDto {
   private String transactionCode;
 
   private int transactionType;
+
+  @JsonIgnore
+  private String pin;
 }

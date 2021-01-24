@@ -1,5 +1,7 @@
 package owuor91.io.transactions.service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,9 @@ public class UserServiceImpl implements UserService {
   @Autowired UserMapper userMapper;
 
   @Override public UserDto createUser(UserDto userDto) {
-    return userMapper.toUserDto(userRepository.save(userMapper.toUser(userDto)));
+    User user = userMapper.toUser(userDto);
+    user.setPin(hashPin(userDto.getPin()));
+    return userMapper.toUserDto(userRepository.save(user));
   }
 
   @Override public UserDto findDefaultSystemUser() throws UserNotFoundException {
@@ -24,5 +28,27 @@ public class UserServiceImpl implements UserService {
       return userMapper.toUserDto(defaultUser.get());
     }
     throw new UserNotFoundException("Default user not found");
+  }
+
+  private String hashPin(String pin) {
+    try {
+      MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+      messageDigest.update(pin.getBytes());
+      return new String(messageDigest.digest());
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+      return pin;
+    }
+  }
+
+  @Override public boolean userIsValid(String phoneNumber, String pin) {
+    Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      String hashed_pin = hashPin(pin);
+      boolean valid = hashed_pin.equals(user.getPin());
+      return valid;
+    }
+    return false;
   }
 }
