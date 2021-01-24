@@ -2,7 +2,9 @@ package owuor91.io.transactions.service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,5 +66,13 @@ public class TransactionServiceImpl implements TransactionService {
       return user.getWallet();
     }
     return null;
+  }
+
+  @Override public List<TransactionDto> listTransactionsByPhoneNumber(String phoneNumber) {
+    List<Transaction> transactionList =
+        transactionRepository.findBySenderOrReceiver(phoneNumber, phoneNumber);
+    return transactionList.stream()
+        .map(transaction -> transactionsMapper.toTransactionDto(transaction))
+        .collect(Collectors.toList());
   }
 }
