@@ -6,11 +6,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Util {
-  public static String generateRandomCode() {
+  public static String generateRandomCode(boolean pin) {
     String source = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int size = 8;
+    if (pin) {
+      source = "0123456789";
+      size = 4;
+    }
     SecureRandom secureRandom = new SecureRandom();
-    StringBuilder stringBuilder = new StringBuilder(6);
-    for (int i = 0; i < 8; i++) {
+    StringBuilder stringBuilder = new StringBuilder();
+    for (int i = 0; i < size; i++) {
       stringBuilder.append(source.charAt(secureRandom.nextInt(source.length())));
     }
     return stringBuilder.toString();

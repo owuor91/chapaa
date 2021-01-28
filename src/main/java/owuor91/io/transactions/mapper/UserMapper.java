@@ -12,6 +12,7 @@ public class UserMapper {
         .name(userDto.getName())
         .phoneNumber(userDto.getPhoneNumber())
         .pin(userDto.getPin())
+        .email(userDto.getEmail())
         .build();
   }
 
@@ -21,6 +22,7 @@ public class UserMapper {
         .name(user.getName())
         .phoneNumber(user.getPhoneNumber())
         .pin(user.getPin())
+        .email(user.getEmail())
         .build();
   }
 }

@@ -24,4 +24,6 @@ public interface SmsSender {
   String[] getTime(TransactionDto transactionDto);
 
   String composeBalanceMessage(BalanceDto balanceDto);
+
+  String composeNewPinMessage(String newPin);
 }

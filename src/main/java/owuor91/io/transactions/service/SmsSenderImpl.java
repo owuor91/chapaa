@@ -100,4 +100,8 @@ public class SmsSenderImpl implements SmsSender {
     String[] time = Util.getDateTimeFromTimeStamp(balanceDto.timestamp);
     return String.format(templatesMap.get(Constants.BALANCE), balanceDto.balance, time[0], time[1]);
   }
+
+  @Override public String composeNewPinMessage(String newPin) {
+    return String.format("Pin reset successful. Your new pin is %s.", newPin);
+  }
 }

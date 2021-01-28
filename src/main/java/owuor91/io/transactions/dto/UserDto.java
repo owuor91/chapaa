@@ -16,4 +16,6 @@ public class UserDto {
 
   @JsonIgnore
   private String pin;
+
+  private String email;
 }

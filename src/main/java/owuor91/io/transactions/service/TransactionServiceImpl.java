@@ -32,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
   @Transactional
   @Override public TransactionDto postTransaction(TransactionDto transactionDto)
       throws UserNotFoundException, InsufficientBalanceException {
-    transactionDto.setTransactionCode(generateRandomCode());
+    transactionDto.setTransactionCode(generateRandomCode(false));
     transactionDto.setTimestamp(Timestamp.from(Instant.now()));
     Wallet senderWallet = findWalletByPhoneNumber(transactionDto.getSender());
     Wallet receiverWallet = findWalletByPhoneNumber(transactionDto.getReceiver());

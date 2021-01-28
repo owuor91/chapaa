@@ -5,11 +5,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import owuor91.io.transactions.dto.PinResetResponse;
 import owuor91.io.transactions.dto.UserDto;
 import owuor91.io.transactions.exceptions.UserNotFoundException;
 import owuor91.io.transactions.mapper.UserMapper;
 import owuor91.io.transactions.model.User;
 import owuor91.io.transactions.repository.UserRepository;
+import owuor91.io.transactions.util.Util;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -50,5 +52,24 @@ public class UserServiceImpl implements UserService {
       return valid;
     }
     return false;
+  }
+
+  @Override public PinResetResponse resetPin(String phoneNumber, String email) {
+    Optional<User> userOptional = userRepository.findByPhoneNumberAndEmail(phoneNumber, email);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      String newpin = Util.generateRandomCode(true);
+      user.setPin(hashPin(newpin));
+      userRepository.save(user);
+      return PinResetResponse.builder()
+          .message("Pin reset successful. Check your sms inbox for new pin")
+          .newPin(newpin)
+          .phoneNumber(user.getPhoneNumber())
+          .success(true)
+          .build();
+    }
+    return PinResetResponse.builder()
+        .success(false)
+        .message("No user found with that email and phone number").build();
   }
 }
